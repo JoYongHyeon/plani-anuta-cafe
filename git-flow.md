@@ -157,7 +157,7 @@ docs: Git Flow 문서 추가
 
 7. develop이 충분히 안정화되면 main으로 PR 생성
 
-8. main 배포
+8. main 배포.
 ```
 
 ---
