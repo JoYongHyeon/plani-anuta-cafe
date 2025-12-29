@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+<h1>OAuth Login Success</h1>
+<p id="access"></p>
+<p id="refresh"></p>
+
+<script>
+    const params = new URLSearchParams(location.search);
+    document.getElementById("access").innerText =
+        "Access Token: " + params.get("accessToken");
+    document.getElementById("refresh").innerText =
+        "Refresh Token: " + params.get("refreshToken");
+</script>
+</body>
+</html>
