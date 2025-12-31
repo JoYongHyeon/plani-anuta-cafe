@@ -20,7 +20,7 @@ public class JwtProvider {
     private final JwtProperties props;
     private SecretKey key;
 
-    // secret 문자열을 HMAC SHA 키로 변환 (1회 생성 후 재사용)
+    // yaml 의 평문 secret 을 HMAC-SHA 알고리즘용 키 객체로 변환 및 캐싱
     private SecretKey getKey() {
         if (key == null) {
             key = Keys.hmacShaKeyFor(props.secret().getBytes(StandardCharsets.UTF_8));
@@ -28,23 +28,21 @@ public class JwtProvider {
         return key;
     }
 
-    // Access Token 생성 (사용자 ID, 이메일, 권한 포함)
+    // [Access Token] 단기 인증용: 유저 ID, 이메일, 권한(Role)을 포함
     public String createAccessToken(Long id, String email, String role) {
         long now = System.currentTimeMillis();
         Date exp = new Date(now + props.accessTokenExpiration());
 
         return Jwts.builder()
-                // sub 클레임
-                .subject(String.valueOf(id))
-                // 커스텀 클레임
-                .claim("email", email)
-                .claim("role", role)
-                .expiration(exp)
-                .signWith(getKey())
+                .subject(String.valueOf(id)) // 유저 식별자(PK)
+                .claim("email", email) // 커스텀 클레임: 이메일
+                .claim("role", role)   // 커스텀 클레임: 권한
+                .expiration(exp)             // 만료 시간 설정
+                .signWith(getKey())          // 암호화 서명
                 .compact();
     }
 
-    // Refresh Token 생성 (userId 만 보관)
+    // [Refresh Token] 재발급용: 보안을 위해 최소한의 정보(ID)만 포함
     public String createRefreshToken(Long id) {
         long now = System.currentTimeMillis();
         Date exp = new Date(now + props.refreshTokenExpiration());
@@ -56,7 +54,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    // 토큰에서 userId(subnet) 추출
+    // 토큰에서 유저 고유 ID(Subject) 추출
     public Long getUserId(String token) {
         return Long.parseLong(
                 Jwts.parser().verifyWith(getKey()).build()
@@ -65,17 +63,22 @@ public class JwtProvider {
         );
     }
 
-    // 토큰 유형성 검증 (서명/만료 등)
+    // 토큰에서 유저 권한(Role) 추출 - DB 조회 없이 인가 처리를 가능하게 함
+    public String getUserRole(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+    }
+
+    // 토큰 유형성 검증 (서명 변조, 만료 여부 확인)
     public boolean validate(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith(getKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (Exception e) {
-            // 만료, 잘못된 서명 등은 여기로 들어옴
-            return false;
-        }
+        Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token);  // 내부적으로 만료 시 예외를 던짐
+        return true;
     }
 }

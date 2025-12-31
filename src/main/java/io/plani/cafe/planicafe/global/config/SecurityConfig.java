@@ -1,6 +1,7 @@
 package io.plani.cafe.planicafe.global.config;
 
 import io.plani.cafe.planicafe.global.security.filter.JwtAuthenticationFilter;
+import io.plani.cafe.planicafe.global.security.filter.JwtExceptionFilter;
 import io.plani.cafe.planicafe.global.security.handler.OAuth2AuthenticationFailureHandler;
 import io.plani.cafe.planicafe.global.security.handler.OAuth2AuthenticationSuccessHandler;
 import io.plani.cafe.planicafe.global.security.service.CustomOAuth2UserService;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler successHandler;
     private final OAuth2AuthenticationFailureHandler failureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
@@ -116,7 +118,8 @@ public class SecurityConfig {
                  *
                  * 즉, 로그인 이후 API 인증은 이 필터가 전담함.
                  */
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

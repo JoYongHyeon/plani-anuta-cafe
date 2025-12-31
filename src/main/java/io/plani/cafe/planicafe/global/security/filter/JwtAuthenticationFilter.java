@@ -1,8 +1,7 @@
 package io.plani.cafe.planicafe.global.security.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.plani.cafe.planicafe.global.security.jwt.JwtProvider;
-import io.plani.cafe.planicafe.domain.member.entity.MemberEntity;
-import io.plani.cafe.planicafe.domain.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +25,6 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(
@@ -37,31 +35,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 1. Authorization 헤더에서 JWT 추출
         String jwt = resolveToken(req);
 
-        // 2. 토큰이 있고 유효하면 SecurityContext 에 인증정보 세팅
-        if (StringUtils.hasText(jwt) && jwtProvider.validate(jwt)) {
+            // 2. 유효하면 인증 처리, 유효하지 않으면 (예외 발생 시) 그냥 위로 던짐
+            if (StringUtils.hasText(jwt) && jwtProvider.validate(jwt)) {
+                Long userId = jwtProvider.getUserId(jwt);
+                String role = jwtProvider.getUserRole(jwt);
 
-            Long userId = jwtProvider.getUserId(jwt);
-
-            MemberEntity user = memberRepository.findById(userId).
-                    orElse(null);
-
-            if (user != null) {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                user,
-                                null,
-                                List.of(new SimpleGrantedAuthority(
-                                        user.getRole().getAuthority()
-                                ))
+                                userId, null, List.of(new SimpleGrantedAuthority(role))
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        }
-
-        // 다음 필터로 진행
         chain.doFilter(req, res);
     }
+
 
     // "Bearer xxx" 형태에서 실제 토큰 부분만 추출
     private String resolveToken(HttpServletRequest request) {
