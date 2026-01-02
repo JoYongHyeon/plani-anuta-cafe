@@ -45,19 +45,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 findByProviderAndProviderId(provider, userInfo.getId())
                 .orElseGet(() -> register(provider, userInfo));
 
-        // 5. 계정 상태 검증
-        member.validateLogin();
-
-        // 6. 마지막 로그인 시간 갱신
-        member.updateLastLogin(LocalDateTime.now());
+        // 5. 계정 상태 검증 + 마지막 로그인 시간 갱신
+        member.completeLoginSession();
 
         // 6. Security 에서 사용할 CustomerOAuth2User 생성하여 반환
-        return new CustomOAuth2User(
-                member.getId(),
-                member.getEmail(),
-                member.getRole(),
-                oAuth2User.getAttributes()
-        );
+        return CustomOAuth2User.from(member, oAuth2User.getAttributes());
     }
 
     // 신규 사용자 등록 (최초 로그인 시)
@@ -68,9 +60,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .providerId(info.getId())
                 .email(info.getEmail())
                 .name(info.getName())
-                .role(UserRole.USER)
-                .status(UserStatus.ACTIVE)
-                .pointBalance(new PointBalanceVO(0))
                 .build();
 
         return memberRepository.save(user);

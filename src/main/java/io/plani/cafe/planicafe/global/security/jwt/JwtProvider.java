@@ -73,6 +73,16 @@ public class JwtProvider {
                 .get("role", String.class);
     }
 
+    // 토큰에서 유저 이메일 추출
+    public String getUserEmail(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("email", String.class);
+    }
+
     // 토큰 유형성 검증 (서명 변조, 만료 여부 확인)
     public boolean validate(String token) {
         Jwts.parser()

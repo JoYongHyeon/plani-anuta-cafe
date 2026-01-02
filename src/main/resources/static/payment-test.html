@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>포인트 충전</title>
+  <script src="https://js.tosspayments.com/v1/payment"></script>
+</head>
+<body>
+<div style="padding: 50px; text-align: center;">
+  <h1>💰 i-포인트 10,000원 충전</h1>
+
+  <button id="payment-button" style="padding:15px 30px; background:#007bff; color:white; border:none; border-radius:5px; font-size:16px; cursor:pointer;">
+    결제하기
+  </button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // [중요] 사장님이 이미 가지고 계신 그 키를 그대로 쓰시면 됩니다!
+    const clientKey = "test_ck_kYG57Eba3GPqPENlBnWEVpWDOxmA";
+
+    // 1. 토스페이먼츠 객체 초기화
+    const tossPayments = TossPayments(clientKey);
+
+    document.getElementById("payment-button").onclick = function() {
+      // 2. 결제 요청 (카드 결제창 띄우기)
+      tossPayments.requestPayment('카드', {
+        amount: 10000,
+        orderId: "ORDER-" + new Date().getTime(),
+        orderName: "i-포인트 10,000원 충전",
+        customerName: "테스트유저",
+        successUrl: window.location.origin + "/payment-success.html",
+        failUrl: window.location.origin + "/payment-fail.html"
+      })
+              .catch(function (error) {
+                if (error.code === 'USER_CANCEL') {
+                  // 사용자가 취소함
+                } else {
+                  alert(error.message);
+                }
+              });
+    };
+  });
+</script>
+</body>
+</html>

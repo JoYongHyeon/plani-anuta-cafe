@@ -1,7 +1,9 @@
 package io.plani.cafe.planicafe.global.security.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.plani.cafe.planicafe.domain.member.vo.UserRole;
 import io.plani.cafe.planicafe.global.security.jwt.JwtProvider;
+import io.plani.cafe.planicafe.global.security.oauth2.CustomOAuth2User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,12 +39,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 2. 유효하면 인증 처리, 유효하지 않으면 (예외 발생 시) 그냥 위로 던짐
             if (StringUtils.hasText(jwt) && jwtProvider.validate(jwt)) {
-                Long userId = jwtProvider.getUserId(jwt);
-                String role = jwtProvider.getUserRole(jwt);
+                Long userId  = jwtProvider.getUserId(jwt);
+                String email = jwtProvider.getUserEmail(jwt);
+                String role  = jwtProvider.getUserRole(jwt);
+
+                // 3. 토큰 정보를 바탕으로 CustomOAuth2User 객체 복원
+                CustomOAuth2User principal = new CustomOAuth2User(
+                        userId,
+                        email,
+                        UserRole.valueOf(role.replace("ROLE_", "")),
+                        null
+                );
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                userId, null, List.of(new SimpleGrantedAuthority(role))
+                                principal,
+                                List.of(new SimpleGrantedAuthority(role))
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);

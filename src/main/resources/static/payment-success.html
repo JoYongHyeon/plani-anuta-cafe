@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+<h1>결제 승인 처리 중... 잠시만 기다려주세요.</h1>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentKey = urlParams.get("paymentKey");
+  const referenceNo = urlParams.get("orderId");
+  const amount = urlParams.get("amount");
+
+  // [핵심] 로컬 스토리지에서 인증 토큰 꺼내기
+  const accessToken = localStorage.getItem("accessToken");
+
+  fetch("/api/payments/confirm", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + accessToken // [보안] 헤더에 JWT 부착
+    },
+    body: JSON.stringify({
+      paymentKey: paymentKey,
+      referenceNo: referenceNo,
+      amount: parseInt(amount)
+    })
+  })
+          .then(res => res.json())
+          .then(data => {
+            if (data.code === "PAY-201") { // 사장님이 만든 SuccessCode
+              alert(data.message);
+              location.href = "/index.html"; // 메인으로
+            } else {
+              alert("승인 실패: " + data.message);
+              location.href = "/payment-test.html";
+            }
+          })
+          .catch(err => alert("서버 통신 오류"));
+</script>
+</body>
+</html>

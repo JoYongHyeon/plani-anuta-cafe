@@ -40,17 +40,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             HttpServletResponse res,
             Authentication auth) throws IOException {
 
-        // 인증된 사용자 정보 (loadUser() 에서 만든 사용자 객체)
+        // 인증된 사용자 정보 (loadUser() 에서 만든 사용자 객체) 가져오기
         CustomOAuth2User principal = (CustomOAuth2User) auth.getPrincipal();
 
         // 1. 토큰 생성
         String access = jwtProvider.createAccessToken(
-                principal.getId(),
-                principal.getEmail(),
-                principal.getRole().getAuthority()
+                principal.memberId(),
+                principal.email(),
+                principal.role().getAuthority()
         );
 
-        String refresh = jwtProvider.createRefreshToken(principal.getId());
+        String refresh = jwtProvider.createRefreshToken(principal.memberId());
 
         /**
          * 2. Refresh Token 을 쿠키에 담음

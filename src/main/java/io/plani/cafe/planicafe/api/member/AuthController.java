@@ -67,7 +67,7 @@ public class AuthController {
 
         // 5. 새로운 Access Token 생성
         String newAccessToken = jwtProvider.createAccessToken(
-                member.getId(),
+                member.getMemberId(),
                 member.getEmail(),
                 member.getRole().getAuthority()
         );
