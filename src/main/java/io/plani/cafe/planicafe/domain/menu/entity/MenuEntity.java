@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "menus") // 메뉴 카테고리 추가 시 displayOrder 제약조건 추가
@@ -34,6 +37,12 @@ public class MenuEntity {
     @Column(nullable = false)
     @Comment("메뉴의 표시 순서")
     private int displayOrder;
+
+    @OneToMany(mappedBy = "menu",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
+    private List<MenuOptionGroupEntity> optionGroups;
 
     private static final String DEFAULT_NAME = "unnamed";
 
@@ -79,4 +88,17 @@ public class MenuEntity {
         if (order < 0) throw new IllegalArgumentException("메뉴의 표시 순서는 음수로 변경이 불가능합니다.");
         this.displayOrder = order;
     }
+
+    /**
+     * 메뉴에 옵션 그룹을 추가
+     *
+     * @param group 옵션 그룹
+     */
+    public void addOptionGroup(MenuOptionGroupEntity group) {
+        if (this.optionGroups == null) {
+            this.optionGroups = new ArrayList<>();
+        }
+        this.optionGroups.add(group);
+    }
+
 }
