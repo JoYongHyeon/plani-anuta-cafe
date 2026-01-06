@@ -73,17 +73,14 @@ public class SecurityConfig {
                         // 로그인 관련, 헬스체크 등은 모두 허용
                         .requestMatchers(
                                 "/error",
+                                "/favicon.ico",
                                 "/oauth2/**",     // OAuth2 Authorization 요청 및 콜백 경로
                                 "/h2-console/**", // H2 콘솔 (개발용)
 
                                 // TODO: 화면 없이 임시 화면용 나중에 뺴야함
-                                "/login.html",    // 커스텀 로그인 화면 (프론트에서 접근)
                                 "/*.html",
-                                "/static/**",
-                                "/js/**",
-                                "/img/**",
-                                "/css/**",
-                                "/favicon.ico"
+                                "/*.css",
+                                "/*.js"
                         ).permitAll()
 
                         // 결제 승인, 포인트 차감 등 실제 돈이 오가는 API 는 무조건 인증 필요

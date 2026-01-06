@@ -1,40 +1,57 @@
 <!DOCTYPE html>
 <html lang="ko">
+<head>
+    <meta charset="utf-8" />
+</head>
 <body>
-<h1>결제 승인 처리 중... 잠시만 기다려주세요.</h1>
+<h2>결제 성공</h2>
+<p id="paymentKey"></p>
+<p id="orderId"></p>
+<p id="amount"></p>
 
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const paymentKey = urlParams.get("paymentKey");
-  const referenceNo = urlParams.get("orderId");
-  const amount = urlParams.get("amount");
+    // 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
+    // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentKey = urlParams.get("paymentKey");
+    const orderId = urlParams.get("orderId");
+    const amount = urlParams.get("amount");
 
-  // [핵심] 로컬 스토리지에서 인증 토큰 꺼내기
-  const accessToken = localStorage.getItem("accessToken");
+    async function confirm() {
+        const requestData = {
+            paymentKey: paymentKey,
+            orderId: orderId,
+            amount: amount,
+        };
 
-  fetch("/api/payments/confirm", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + accessToken // [보안] 헤더에 JWT 부착
-    },
-    body: JSON.stringify({
-      paymentKey: paymentKey,
-      referenceNo: referenceNo,
-      amount: parseInt(amount)
-    })
-  })
-          .then(res => res.json())
-          .then(data => {
-            if (data.code === "PAY-201") { // 사장님이 만든 SuccessCode
-              alert(data.message);
-              location.href = "/index.html"; // 메인으로
-            } else {
-              alert("승인 실패: " + data.message);
-              location.href = "/payment-test.html";
-            }
-          })
-          .catch(err => alert("서버 통신 오류"));
+        const response = await fetch("/confirm", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            // 결제 실패 비즈니스 로직을 구현하세요.
+            console.log(json);
+            window.location.href = `/fail?message=${json.message}&code=${json.code}`;
+        }
+
+        // 결제 성공 비즈니스 로직을 구현하세요.
+        console.log(json);
+    }
+    confirm();
+
+    const paymentKeyElement = document.getElementById("paymentKey");
+    const orderIdElement = document.getElementById("orderId");
+    const amountElement = document.getElementById("amount");
+
+    orderIdElement.textContent = "주문번호: " + orderId;
+    amountElement.textContent = "결제 금액: " + amount;
+    paymentKeyElement.textContent = "paymentKey: " + paymentKey;
 </script>
 </body>
 </html>

@@ -1,46 +1,112 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>포인트 충전</title>
-  <script src="https://js.tosspayments.com/v1/payment"></script>
+  <meta charset="utf-8" />
+  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>토스페이먼츠 샘플 프로젝트</title>
+  <!-- 토스페이먼츠 SDK 추가 -->
+  <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
+
 <body>
-<div style="padding: 50px; text-align: center;">
-  <h1>💰 i-포인트 10,000원 충전</h1>
+<!-- 주문서 영역 -->
+<div class="wrapper">
+  <div class="box_section">
+    <!-- 결제 UI -->
+    <div id="payment-method"></div>
+    <!-- 이용약관 UI -->
+    <div id="agreement"></div>
+    <!-- 쿠폰 체크박스 -->
+    <div>
+    <div>
+      <div class="checkable typography--p">
+        <label for="coupon-box" class="checkable__label typography--regular"
+        ><input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true" /><span class="checkable__label-text">1,000원 쿠폰 적용</span></label
+        >
+      </div>
+    </div>
+    <!-- 결제하기 버튼 -->
+    <div class="result wrapper">
+      <button class="button" id="payment-button">
+        결제하기
+      </button>
+    </div>
+  </div>
+  <script>
+    main();
 
-  <button id="payment-button" style="padding:15px 30px; background:#007bff; color:white; border:none; border-radius:5px; font-size:16px; cursor:pointer;">
-    결제하기
-  </button>
-</div>
+    async function main() {
+      const button = document.getElementById("payment-button");
+      const coupon = document.getElementById("coupon-box");
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // [중요] 사장님이 이미 가지고 계신 그 키를 그대로 쓰시면 됩니다!
-    const clientKey = "test_ck_kYG57Eba3GPqPENlBnWEVpWDOxmA";
+      const amount = {
+        currency: "KRW",
+        value: 5000,
+      };
+      // ------  결제위젯 초기화 ------
+      const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+      const customerKey = generateRandomString();
+      const tossPayments = TossPayments(clientKey);
 
-    // 1. 토스페이먼츠 객체 초기화
-    const tossPayments = TossPayments(clientKey);
+      // 회원 결제
+      const widgets = tossPayments.widgets({
+        customerKey,
+      });
 
-    document.getElementById("payment-button").onclick = function() {
-      // 2. 결제 요청 (카드 결제창 띄우기)
-      tossPayments.requestPayment('카드', {
-        amount: 10000,
-        orderId: "ORDER-" + new Date().getTime(),
-        orderName: "i-포인트 10,000원 충전",
-        customerName: "테스트유저",
-        successUrl: window.location.origin + "/payment-success.html",
-        failUrl: window.location.origin + "/payment-fail.html"
-      })
-              .catch(function (error) {
-                if (error.code === 'USER_CANCEL') {
-                  // 사용자가 취소함
-                } else {
-                  alert(error.message);
-                }
-              });
-    };
-  });
-</script>
+      // ------  주문서의 결제 금액 설정 ------
+      // TODO: 위젯의 결제금액을 결제하려는 금액으로 초기화하세요.
+      // TODO: renderPaymentMethods, renderAgreement, requestPayment 보다 반드시 선행되어야 합니다.
+      await widgets.setAmount(amount);
+
+      // ------  결제 UI 렌더링 ------
+      await widgets.renderPaymentMethods({
+        selector: "#payment-method",
+        variantKey: "DEFAULT",
+      });
+
+      // ------  이용약관 UI 렌더링 ------
+      await widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" });
+
+      // ------  주문서의 결제 금액이 변경되었을 경우 결제 금액 업데이트 ------
+      coupon.addEventListener("change", async function () {
+        if (coupon.checked) {
+          await widgets.setAmount({
+            currency: "KRW",
+            value: amount.value - 1000,
+          });
+
+          return;
+        }
+
+        await widgets.setAmount({
+          currency: "KRW",
+          value: amount,
+        });
+      });
+
+      // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
+      button.addEventListener("click", async function () {
+        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+        // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+        await widgets.requestPayment({
+          orderId: generateRandomString(),
+          orderName: "토스 티셔츠 외 2건",
+          successUrl: window.location.origin + "/payment-success.html",
+          failUrl: window.location.origin + "/fail.html",
+          customerEmail: "customer123@gmail.com",
+          customerName: "김토스",
+          customerMobilePhone: "01012341234",
+        });
+      });
+    }
+
+    // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
+    function generateRandomString() {
+      return window.btoa(Math.random()).slice(0, 20);
+    }
+  </script>
 </body>
 </html>
