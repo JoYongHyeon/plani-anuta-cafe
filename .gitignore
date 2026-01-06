@@ -39,3 +39,4 @@ out/
 application-local.yml
 .env
 
+CLAUDE.md

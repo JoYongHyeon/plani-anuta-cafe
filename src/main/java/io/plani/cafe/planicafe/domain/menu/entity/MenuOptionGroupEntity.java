@@ -21,7 +21,13 @@ public class MenuOptionGroupEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id", nullable = false)
+    @JoinColumn(
+            name = "menu_id",
+            nullable = false,
+            foreignKey = @ForeignKey(
+                    foreignKeyDefinition = "FOREIGN KEY (menu_id) REFERENCES menus(id) ON DELETE CASCADE"
+            )
+    )
     @Comment("옵션그룹이 속한 메뉴")
     private MenuEntity menu;
 
