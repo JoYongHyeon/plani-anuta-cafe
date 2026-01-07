@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,5 +34,26 @@ public class MenuCategory {
     public MenuCategory(String name, int displayOrder) {
         this.name = name;
         this.displayOrder = displayOrder;
+    }
+
+    private static final String DEFAULT_NAME = "unnamed";
+
+    /**
+     * 카테고리의 이름을 변경
+     *
+     * @param name 변경 이름
+     */
+    public void changeName(String name) {
+        this.name = (name == null || name.isBlank()) ? DEFAULT_NAME : name;
+    }
+
+    /**
+     * 카테고리의 표시 순서를 변경
+     *
+     * @param order 변경 순서
+     */
+    public void changeDisplayOrder(int order) {
+        if (order < 0) throw new IllegalArgumentException("카테고리의 표시 순서는 음수로 변경이 불가능합니다.");
+        this.displayOrder = order;
     }
 }
