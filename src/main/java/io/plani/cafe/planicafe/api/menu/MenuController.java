@@ -21,20 +21,14 @@ public class MenuController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> createMenu(@RequestBody MenuCreateRequestDTO req) {
-        service.createMenu(
-                req.categoryId(),
-                req.name(),
-                req.price(),
-                req.displayOrder());
+        service.createMenu(req);
 
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MENU_CREAT_SUCCESS, null));
     }
 
     @PostMapping("/category")
     public ResponseEntity<ApiResponse<Void>> createCategory(@RequestBody CategoryCreateRequestDTO req) {
-        service.createCategory(
-                req.name(),
-                req.displayOrder());
+        service.createCategory(req);
 
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MENU_CATEGORY_CREAT_SUCCESS, null));
     }
