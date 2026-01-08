@@ -1,5 +1,7 @@
 package io.plani.cafe.planicafe.domain.menu.entity;
 
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
+import io.plani.cafe.planicafe.global.enums.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -60,6 +62,10 @@ public class MenuOptionGroupEntity {
      * @param name 변경 이름
      */
     public void changeName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.name = name;
     }
 
@@ -81,6 +87,7 @@ public class MenuOptionGroupEntity {
         if (this.optionItems == null) {
             this.optionItems = new ArrayList<>();
         }
+
         this.optionItems.add(item);
     }
 

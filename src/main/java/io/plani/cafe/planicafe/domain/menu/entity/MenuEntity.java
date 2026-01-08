@@ -1,6 +1,8 @@
 package io.plani.cafe.planicafe.domain.menu.entity;
 
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
 import io.plani.cafe.planicafe.domain.menu.vo.MenuStatus;
+import io.plani.cafe.planicafe.global.enums.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -74,6 +76,10 @@ public class MenuEntity {
      * @param name 변경 이름
      */
     public void changeName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.name = name;
     }
 
@@ -83,6 +89,10 @@ public class MenuEntity {
      * @param price 변경 금액
      */
     public void changePrice(int price) {
+        if (price < 0) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.price = price;
     }
 
@@ -101,6 +111,10 @@ public class MenuEntity {
      * @param order 변경 순서
      */
     public void changeDisplayOrder(int order) {
+        if (order < 0) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.displayOrder = order;
     }
 

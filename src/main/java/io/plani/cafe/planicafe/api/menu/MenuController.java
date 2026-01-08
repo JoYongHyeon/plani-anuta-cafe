@@ -22,7 +22,7 @@ public class MenuController {
     public ResponseEntity<ApiResponse<Void>> createMenu(@RequestBody MenuCreateRequestDTO req) {
         service.createMenu(req);
 
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MENU_CREAT_SUCCESS, null));
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MENU_CREATE_SUCCESS, null));
     }
 
     @GetMapping("/{id}")

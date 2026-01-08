@@ -12,12 +12,12 @@ public enum SuccessCode implements ResponseCode {
     CHARGE_SUCCESS(200, "PAY-201", "포인트 충전이 성공했습니다."),
 
     // MENU
-    MENU_CREAT_SUCCESS(200, "MENU-200", "메뉴 생성에 성공했습니다."),
+    MENU_CREATE_SUCCESS(201, "MENU-200", "메뉴 생성에 성공했습니다."),
     MENU_READ_SUCCESS(200, "MENU-200", "메뉴 조회에 성공했습니다."),
     MENU_UPDATE_SUCCESS(200, "MENU-200", "메뉴 수정에 성공했습니다."),
     MENU_DELETE_SUCCESS(200, "MENU-200", "메뉴 삭제에 성공했습니다."),
 
-    MENU_CATEGORY_CREAT_SUCCESS(200, "MENU-204", "카테고리 생성이 성공했습니다.");
+    MENU_CATEGORY_CREAT_SUCCESS(201, "MENU-204", "카테고리 생성이 성공했습니다.");
 
     private final int httpStatus;
     private final String code;

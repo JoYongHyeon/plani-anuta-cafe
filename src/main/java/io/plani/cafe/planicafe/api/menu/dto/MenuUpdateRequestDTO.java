@@ -1,6 +1,8 @@
 package io.plani.cafe.planicafe.api.menu.dto;
 
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
 import io.plani.cafe.planicafe.domain.menu.vo.MenuStatus;
+import io.plani.cafe.planicafe.global.enums.ErrorCode;
 
 public record MenuUpdateRequestDTO(
     Long id, // 메뉴 id
@@ -12,15 +14,15 @@ public record MenuUpdateRequestDTO(
 ) {
     public MenuUpdateRequestDTO {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("메뉴의 이름은 필수 값 입니다.");
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         if (price < 0) {
-            throw new IllegalArgumentException("메뉴의 가격은 음수로 설정이 불가능합니다.");
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         if (displayOrder < 0) {
-            throw new IllegalArgumentException("메뉴의 표시 순서는 음수로 설정이 불가능합니다.");
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
         }
     }
 }

@@ -62,10 +62,13 @@ public class MenuServiceImpl implements MenuService {
         MenuEntity entity = repository.findById(req.id())
                 .orElseThrow(() -> new MenuException(ErrorCode.MENU_NOT_FOUND));
 
-        MenuCategoryEntity category = categoryRepository.findById(req.categoryId())
-                .orElseThrow(() -> new MenuException(ErrorCode.MENU_CATEGORY_NOT_FOUND));
+        if(!entity.getCategory().getId().equals(req.categoryId())){
+            MenuCategoryEntity category = categoryRepository.findById(req.categoryId())
+                    .orElseThrow(() -> new MenuException(ErrorCode.MENU_CATEGORY_NOT_FOUND));
 
-        entity.changeCategory(category);
+            entity.changeCategory(category);
+        }
+
         entity.changeName(req.name());
         entity.changePrice(req.price());
         entity.changeStatus(req.status());
