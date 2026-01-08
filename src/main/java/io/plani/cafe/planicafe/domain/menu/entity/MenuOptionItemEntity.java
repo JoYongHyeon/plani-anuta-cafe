@@ -1,6 +1,8 @@
 package io.plani.cafe.planicafe.domain.menu.entity;
 
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
 import io.plani.cafe.planicafe.global.entity.BaseEntity;
+import io.plani.cafe.planicafe.global.enums.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,15 +41,13 @@ public class MenuOptionItemEntity extends BaseEntity {
     @Comment("옵션의 표시 순서")
     private int displayOrder;
 
-    private static final String DEFAULT_NAME = "unnamed";
-
     @Builder
     public MenuOptionItemEntity(MenuOptionGroupEntity group,
                                 String name,
                                 int price,
                                 int displayOrder) {
         this.group = group;
-        this.name = (name == null || name.isBlank()) ? DEFAULT_NAME : name;
+        this.name = name;
         this.price = price;
         this.displayOrder = displayOrder;
     }
@@ -58,7 +58,11 @@ public class MenuOptionItemEntity extends BaseEntity {
      * @param name 변경 이름
      */
     public void changeName(String name) {
-        this.name = (name == null || name.isBlank()) ? DEFAULT_NAME : name;
+        if (name == null || name.isBlank()) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        this.name = name;
     }
 
     /**
@@ -67,6 +71,10 @@ public class MenuOptionItemEntity extends BaseEntity {
      * @param price 변경 금액
      */
     public void changePrice(int price) {
+        if (price < 0) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.price = price;
     }
 
@@ -76,7 +84,10 @@ public class MenuOptionItemEntity extends BaseEntity {
      * @param order 변경 순서
      */
     public void changeDisplayOrder(int order) {
-        if (order < 0) throw new IllegalArgumentException("옵션의 표시 순서는 음수로 변경이 불가능합니다.");
+        if (order < 0) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         this.displayOrder = order;
     }
 
