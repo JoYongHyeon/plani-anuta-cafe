@@ -26,7 +26,7 @@ public class MenuEntity {
             )
     )
     @Comment("메뉴가 속한 카테고리")
-    private MenuCategory category;
+    private MenuCategoryEntity category;
 
     @Column(nullable = false)
     @Comment("메뉴의 이름")
@@ -45,10 +45,8 @@ public class MenuEntity {
     @Comment("메뉴의 표시 순서")
     private int displayOrder;
 
-    private static final String DEFAULT_NAME = "unnamed";
-
     @Builder
-    public MenuEntity(MenuCategory category,
+    public MenuEntity(MenuCategoryEntity category,
                       String name,
                       int price,
                       int displayOrder) {
@@ -62,12 +60,21 @@ public class MenuEntity {
     }
 
     /**
+     * 메뉴의 소속 카테고리를 변경
+     *
+     * @param category 변경 이름
+     */
+    public void changeCategory(MenuCategoryEntity category) {
+        this.category = category;
+    }
+
+    /**
      * 메뉴의 이름을 변경
      *
      * @param name 변경 이름
      */
     public void changeName(String name) {
-        this.name = (name == null || name.isBlank()) ? DEFAULT_NAME : name;
+        this.name = name;
     }
 
     /**
@@ -76,8 +83,16 @@ public class MenuEntity {
      * @param price 변경 금액
      */
     public void changePrice(int price) {
-        if (price < 0) throw new IllegalArgumentException("메뉴의 금액은 음수로 변경이 불가능합니다.");
         this.price = price;
+    }
+
+    /**
+     * 메뉴의 상태를 변경
+     *
+     * @param status 변경 상태
+     */
+    public void changeStatus(MenuStatus status) {
+        this.status = status;
     }
 
     /**
@@ -86,7 +101,6 @@ public class MenuEntity {
      * @param order 변경 순서
      */
     public void changeDisplayOrder(int order) {
-        if (order < 0) throw new IllegalArgumentException("메뉴의 표시 순서는 음수로 변경이 불가능합니다.");
         this.displayOrder = order;
     }
 

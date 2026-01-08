@@ -45,8 +45,6 @@ public class MenuOptionGroupEntity {
             orphanRemoval = true)
     private List<MenuOptionItemEntity> optionItems;
 
-    private static final String DEFAULT_NAME = "unnamed";
-
     @Builder
     public MenuOptionGroupEntity(MenuEntity menu,
                                  String name,
@@ -62,7 +60,7 @@ public class MenuOptionGroupEntity {
      * @param name 변경 이름
      */
     public void changeName(String name) {
-        this.name = (name == null || name.isBlank()) ? DEFAULT_NAME : name;
+        this.name = name;
     }
 
     /**
