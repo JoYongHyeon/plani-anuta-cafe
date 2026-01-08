@@ -4,12 +4,14 @@ import io.plani.cafe.planicafe.api.menu.dto.CategoryCreateRequestDTO;
 import io.plani.cafe.planicafe.api.menu.dto.MenuCreateRequestDTO;
 import io.plani.cafe.planicafe.domain.menu.entity.MenuCategory;
 import io.plani.cafe.planicafe.domain.menu.entity.MenuEntity;
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
 import io.plani.cafe.planicafe.domain.menu.repository.MenuCategoryRepository;
 import io.plani.cafe.planicafe.domain.menu.repository.MenuRepository;
 import io.plani.cafe.planicafe.domain.menu.service.MenuService;
-import org.springframework.transaction.annotation.Transactional;
+import io.plani.cafe.planicafe.global.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +27,8 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public void createMenu(MenuCreateRequestDTO req) {
-
         MenuCategory category = categoryRepository.findById(req.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("메뉴 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MenuException(ErrorCode.MENU_CATEGORY_NOT_FOUND));
 
         MenuEntity menu = MenuEntity.builder()
                 .category(category)

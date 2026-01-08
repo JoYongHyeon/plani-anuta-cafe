@@ -1,5 +1,6 @@
 package io.plani.cafe.planicafe.global.exception;
 
+import io.plani.cafe.planicafe.domain.menu.exception.MenuException;
 import io.plani.cafe.planicafe.global.common.response.ApiResponse;
 import io.plani.cafe.planicafe.global.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
     /**
      * 비즈니스 로직 중 발생하는 모든 예외를 ApiResponse 규격으로 변환
      */
@@ -31,5 +31,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(400)
                 .body(ApiResponse.error(ErrorCode.INVALID_INPUT_VALUE, e.getMessage()));
+    }
+
+    /**
+     * 메뉴 도메인 예외 처리
+     */
+    @ExceptionHandler(MenuException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMenuException(MenuException e) {
+        log.error("[메뉴 예외 발생] code={}, message={}", e.getErrorCode(), e.getMessage());
+
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(ApiResponse.failure(e.getErrorCode()));
     }
 }
