@@ -16,8 +16,8 @@ public enum ErrorCode implements ResponseCode {
     PAYMENT_CONFIRM_FAILED(400, "PAY-400", "결제 승인에 실패했습니다."),
 
     // 메뉴 에러
-    MENU_NOT_FOUND(400, "MENU-400", "메뉴를 찾을 수 없습니다."),
-    MENU_CATEGORY_NOT_FOUND(400, "MENU-400", "메뉴 카테고리를 찾을 수 없습니다.");
+    MENU_NOT_FOUND(404, "MENU-400", "메뉴를 찾을 수 없습니다."),
+    MENU_CATEGORY_NOT_FOUND(404, "MENU-400", "메뉴 카테고리를 찾을 수 없습니다.");
 
     private final int httpStatus;
     private final String code;

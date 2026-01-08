@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
      * 메뉴 도메인 예외 처리
      */
     @ExceptionHandler(MenuException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBusinessException(MenuException e) {
+    public ResponseEntity<ApiResponse<Void>> handleMenuException(MenuException e) {
         log.error("[메뉴 예외 발생] code={}, message={}", e.getErrorCode(), e.getMessage());
 
         return ResponseEntity
