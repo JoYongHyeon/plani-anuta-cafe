@@ -22,7 +22,7 @@ public class MenuEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "category_id",
             foreignKey = @ForeignKey(
