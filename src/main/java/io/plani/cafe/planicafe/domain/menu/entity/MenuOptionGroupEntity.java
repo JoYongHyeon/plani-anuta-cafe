@@ -23,13 +23,7 @@ public class MenuOptionGroupEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "menu_id",
-            nullable = false,
-            foreignKey = @ForeignKey(
-                    foreignKeyDefinition = "FOREIGN KEY (menu_id) REFERENCES menus(id) ON DELETE CASCADE"
-            )
-    )
+    @JoinColumn(name = "menu_id", nullable = false)
     @Comment("옵션그룹이 속한 메뉴")
     private MenuEntity menu;
 
@@ -41,6 +35,10 @@ public class MenuOptionGroupEntity {
     @Comment("옵션그룹의 필수여부")
     private Boolean isRequired;
 
+    @Column(nullable = false)
+    @Comment("옵션그룹의 표시 순서")
+    private int displayOrder;
+
     @OneToMany(mappedBy = "group",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
@@ -50,10 +48,12 @@ public class MenuOptionGroupEntity {
     @Builder
     public MenuOptionGroupEntity(MenuEntity menu,
                                  String name,
-                                 Boolean isRequired) {
+                                 Boolean isRequired,
+                                 int displayOrder) {
         this.menu = menu;
         this.name = name;
         this.isRequired = isRequired;
+        this.displayOrder = displayOrder;
     }
 
     /**
@@ -76,6 +76,19 @@ public class MenuOptionGroupEntity {
      */
     public void changeIsRequired(Boolean isRequired) {
         this.isRequired = isRequired;
+    }
+
+    /**
+     * 메뉴의 표시 순서를 변경
+     *
+     * @param order 변경 순서
+     */
+    public void changeDisplayOrder(int order) {
+        if (order < 0) {
+            throw new MenuException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        this.displayOrder = order;
     }
 
     /**

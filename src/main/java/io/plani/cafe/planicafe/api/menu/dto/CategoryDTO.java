@@ -5,11 +5,13 @@ import lombok.Builder;
 
 @Builder
 public record CategoryDTO(
-        String name,
-        int displayOrder
+        Long id, // 카테고리의 id
+        String name, // 카테고리 명
+        int displayOrder // 카테고리의 표시순서
 ) {
     public static CategoryDTO from(MenuCategoryEntity entity) {
         return CategoryDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .displayOrder(entity.getDisplayOrder())
                 .build();

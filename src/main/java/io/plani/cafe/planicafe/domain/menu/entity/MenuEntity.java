@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "menus") // 메뉴 카테고리 추가 시 displayOrder 제약조건 추가
@@ -20,7 +22,7 @@ public class MenuEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "category_id",
             foreignKey = @ForeignKey(
@@ -46,6 +48,12 @@ public class MenuEntity {
     @Column(nullable = false)
     @Comment("메뉴의 표시 순서")
     private int displayOrder;
+
+    @OneToMany(mappedBy = "menu",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
+    private List<MenuOptionGroupEntity> optionGroup;
 
     @Builder
     public MenuEntity(MenuCategoryEntity category,
