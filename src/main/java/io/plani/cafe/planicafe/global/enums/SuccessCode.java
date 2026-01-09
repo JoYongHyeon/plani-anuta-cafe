@@ -17,6 +17,16 @@ public enum SuccessCode implements ResponseCode {
     MENU_UPDATE_SUCCESS(200, "MENU-200", "메뉴 수정에 성공했습니다."),
     MENU_DELETE_SUCCESS(200, "MENU-200", "메뉴 삭제에 성공했습니다."),
 
+    MENU_GROUP_CREATE_SUCCESS(201, "MENU-200", "메뉴 옵션그룹 생성에 성공했습니다."),
+    MENU_GROUP_READ_SUCCESS(200, "MENU-200", "메뉴 옵션그룹 조회에 성공했습니다."),
+    MENU_GROUP_UPDATE_SUCCESS(200, "MENU-200", "메뉴 옵션그룹 수정에 성공했습니다."),
+    MENU_GROUP_DELETE_SUCCESS(200, "MENU-200", "메뉴 옵션그룹 삭제에 성공했습니다."),
+
+    MENU_ITEM_CREATE_SUCCESS(201, "MENU-200", "메뉴 옵션아이템 생성에 성공했습니다."),
+    MENU_ITEM_READ_SUCCESS(200, "MENU-200", "메뉴 옵션아이템 조회에 성공했습니다."),
+    MENU_ITEM_UPDATE_SUCCESS(200, "MENU-200", "메뉴 옵션아이템 수정에 성공했습니다."),
+    MENU_ITEM_DELETE_SUCCESS(200, "MENU-200", "메뉴 옵션아이템 삭제에 성공했습니다."),
+
     MENU_CATEGORY_CREAT_SUCCESS(201, "MENU-204", "카테고리 생성이 성공했습니다.");
 
     private final int httpStatus;
